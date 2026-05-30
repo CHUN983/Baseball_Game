@@ -264,7 +264,7 @@ function showCharacter(charKey) {
     placeholder.style.display = 'flex';
     revealPortrait();
   };
-  img.src = `../assets/characters/${charKey}.png`;
+  img.src = `assets/characters/${charKey}.png`;
 
   function revealPortrait() {
     portrait.style.display = 'block';
