@@ -351,7 +351,7 @@ function updateBGM(bgName, override) {
   bgmPlayer.pause();
   bgmPlayer.src         = src;
   bgmPlayer.currentTime = 0;
-  bgmPlayer.play().catch(() => {});
+  bgmPlayer.play().catch(e => console.warn('[BGM] play() blocked:', e.message, src));
 }
 
 function playOnce(src, volume = 0.7) {
