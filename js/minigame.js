@@ -101,24 +101,43 @@ function startMinigame(canvas, label, callback) {
     const ZONE_H        = 110;
     const ZONE_CENTER_X = ZONE_X + ZONE_W / 2;
 
-    let ballX        = BALL_START_X;
-    let swung        = false;
-    let hitResult    = null;
-    let resultFrames = 0;
-    let animId       = null;
+    let ballX       = BALL_START_X;
+    let swung       = false;
+    let hitResult   = null;
+    let resultFrame = 0;    // 揮棒後逐幀計數（用於淡入）
+    let resultReady = false; // true 後 Space/click 才能推進
+    let animId      = null;
+
+    function finishGame() {
+      document.removeEventListener('keydown', onKey);
+      canvas.removeEventListener('click', onCanvasClick);
+      cancelAnimationFrame(animId);
+      callback(hitResult);
+    }
 
     function swing() {
       if (swung) return;
       swung     = true;
       hitResult = Math.abs(ballX - ZONE_CENTER_X) <= ZONE_W / 2;
-      resultFrames = 100;
+      playOnce(hitResult ? 'assets/sfx/sfx_hit.mp3' : 'assets/sfx/sfx_miss.mp3');
+      resultFrame = 0;
+      resultReady = false;
+    }
+
+    function onCanvasClick() {
+      if (!swung) swing();
+      else if (resultReady) finishGame();
     }
 
     function onKey(e) {
-      if (e.code === 'Space' || e.code === 'Enter') { e.preventDefault(); swing(); }
+      if (e.code !== 'Space' && e.code !== 'Enter') return;
+      e.preventDefault();
+      if (!swung) swing();
+      else if (resultReady) finishGame();
     }
+
     document.addEventListener('keydown', onKey);
-    canvas.addEventListener('click', swing);
+    canvas.addEventListener('click', onCanvasClick);
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
@@ -163,25 +182,22 @@ function startMinigame(canvas, label, callback) {
       ctx.textAlign = 'center';
       ctx.fillText('打擊區', ZONE_CENTER_X, zoneTop + ZONE_H + 18);
 
-      // 球
-      if (!swung || hitResult !== null) {
-        ctx.beginPath();
-        ctx.arc(ballX, BALL_Y, BALL_RADIUS, 0, Math.PI * 2);
-        ctx.fillStyle   = '#ffffff';
-        ctx.fill();
-        ctx.strokeStyle = '#cccccc';
-        ctx.lineWidth   = 1;
-        ctx.stroke();
-        // 縫線
-        ctx.strokeStyle = '#d04040';
-        ctx.lineWidth   = 1.5;
-        ctx.beginPath();
-        ctx.arc(ballX - 5, BALL_Y, 9, -0.45, 0.45);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(ballX + 5, BALL_Y, 9, Math.PI - 0.45, Math.PI + 0.45);
-        ctx.stroke();
-      }
+      // 球（揮棒前持續移動；揮棒後定格在當前位置）
+      ctx.beginPath();
+      ctx.arc(ballX, BALL_Y, BALL_RADIUS, 0, Math.PI * 2);
+      ctx.fillStyle   = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = '#cccccc';
+      ctx.lineWidth   = 1;
+      ctx.stroke();
+      ctx.strokeStyle = '#d04040';
+      ctx.lineWidth   = 1.5;
+      ctx.beginPath();
+      ctx.arc(ballX - 5, BALL_Y, 9, -0.45, 0.45);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(ballX + 5, BALL_Y, 9, Math.PI - 0.45, Math.PI + 0.45);
+      ctx.stroke();
 
       // 場景標題
       ctx.fillStyle = 'rgba(240,208,128,0.88)';
@@ -189,22 +205,26 @@ function startMinigame(canvas, label, callback) {
       ctx.textAlign = 'center';
       ctx.fillText(label, W / 2, 54);
 
-      // 提示
       if (!swung) {
+        // 揮棒提示
         ctx.fillStyle = 'rgba(255,255,255,0.55)';
         ctx.font      = '15px Georgia, serif';
         ctx.fillText('按 SPACE 鍵或點擊畫面揮棒！', W / 2, H - 56);
-      }
-
-      // 結果文字
-      if (swung && hitResult !== null) {
-        const p     = 1 - resultFrames / 100;
-        const alpha = p < 0.2 ? p / 0.2 : p > 0.8 ? (1 - p) / 0.2 : 1;
+      } else {
+        // 結果文字（淡入後持留，等玩家主動推進）
+        const alpha = Math.min(1, resultFrame / 50);
         ctx.globalAlpha = alpha;
         ctx.font        = 'bold 58px Georgia, serif';
-        ctx.textAlign   = 'center';
         ctx.fillStyle   = hitResult ? '#80ff80' : '#ff8080';
         ctx.fillText(hitResult ? 'PERFECT!' : 'MISS...', W / 2, BALL_Y - 70);
+
+        // 繼續提示（淡入後才顯示）
+        if (resultReady) {
+          ctx.globalAlpha = 0.75;
+          ctx.font        = '15px Georgia, serif';
+          ctx.fillStyle   = 'rgba(240,208,128,1)';
+          ctx.fillText('按 SPACE 鍵或點擊繼續', W / 2, H - 56);
+        }
         ctx.globalAlpha = 1;
       }
     }
@@ -212,20 +232,18 @@ function startMinigame(canvas, label, callback) {
     function loop() {
       if (!swung) {
         ballX += BALL_SPEED;
+        // 球飛出邊界視為揮空
         if (ballX > W - 60) {
-          swung        = true;
-          hitResult    = false;
-          resultFrames = 100;
+          swung     = true;
+          hitResult = false;
+          playOnce('assets/sfx/sfx_miss.mp3');
+          resultFrame = 0;
+          resultReady = false;
         }
-      } else if (resultFrames > 0) {
-        resultFrames--;
-        if (resultFrames === 0) {
-          document.removeEventListener('keydown', onKey);
-          canvas.removeEventListener('click', swing);
-          cancelAnimationFrame(animId);
-          callback(hitResult);
-          return;
-        }
+      } else {
+        resultFrame++;
+        // 50幀後（≈0.83s @60Hz）解鎖推進
+        if (!resultReady && resultFrame >= 50) resultReady = true;
       }
       draw();
       animId = requestAnimationFrame(loop);

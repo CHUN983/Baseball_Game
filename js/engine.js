@@ -1,3 +1,15 @@
+const BGM_MAP = {
+  farm:           'assets/sfx/bgm_main.mp3',
+  field_construct:'assets/sfx/bgm_main.mp3',
+  chisholm:       'assets/sfx/bgm_main.mp3',
+  cornfield_night:'assets/sfx/bgm_mystery.mp3',
+  boston_street:  'assets/sfx/bgm_mystery.mp3',
+  fenway:         'assets/sfx/bgm_mystery.mp3',
+  field_night:    'assets/sfx/bgm_mystery.mp3',
+  field_day:      'assets/sfx/bgm_climax.mp3',
+  field_final:    'assets/sfx/bgm_climax.mp3',
+};
+
 const BG_GRADIENTS = {
   farm:           'linear-gradient(180deg, #87CEEB 0%, #FDB97D 50%, #4a7c3f 100%)',
   cornfield_night:'linear-gradient(180deg, #050518 0%, #0d1f0d 60%, #1a2a0a 100%)',
@@ -15,7 +27,8 @@ const CHARACTERS = {
   annie:  { name: 'Annie',           icon: '👩', gradient: 'linear-gradient(160deg, #4a1a2a, #7a2a4a)' },
   joe:    { name: 'Shoeless Joe',    icon: '⚾', gradient: 'linear-gradient(160deg, #1a2a4a, #1a3a6a)' },
   mann:   { name: 'Terence Mann',    icon: '✒️', gradient: 'linear-gradient(160deg, #2a3a1a, #3a5a2a)' },
-  archie: { name: 'Moonlight Graham',icon: '🌙', gradient: 'linear-gradient(160deg, #1a2a4a, #2a3a7a)' },
+  archie_young: { name: 'Moonlight Graham', icon: '🌙', gradient: 'linear-gradient(160deg, #1a2a4a, #2a3a7a)' },
+  archie_old:   { name: 'Doc Graham',       icon: '👨‍⚕️', gradient: 'linear-gradient(160deg, #2a1a0a, #4a3a2a)' },
   john:   { name: 'John Kinsella',   icon: '🧢', gradient: 'linear-gradient(160deg, #3a2a1a, #5a3a2a)' },
 };
 
@@ -27,11 +40,19 @@ const FLAG_TO_ACHIEVEMENT = {
   go_the_distance: 'go_the_distance',
 };
 
+// 單一 BGM 播放器，換曲時只換 src，絕對不會同時存在兩個 Audio
+const bgmPlayer    = new Audio();
+bgmPlayer.loop     = true;
+bgmPlayer.volume   = 0.35;
+let currentBgmSrc    = null;
+let currentVoiceAudio = null;
+
 let currentScene      = null;
 let currentLineIndex  = 0;
 let isTyping          = false;
 let isShowingChoices  = false;
 let isTransitioning   = false;   // 防止選擇後 click 立即穿透到 #game
+let isMinigameActive  = false;   // 小遊戲執行中，封鎖 engine 的 Space/click
 let typewriterTimeout = null;
 let charLoadId        = 0;       // 防止 showCharacter 的 stale async callback
 let currentCharKey    = null;
@@ -59,6 +80,9 @@ function loadScene(sceneKey) {
   const scene = STORY[sceneKey];
   if (!scene) { console.error('Scene not found:', sceneKey); return; }
 
+  // 切場景時停止任何殘留的聲音 SFX
+  stopVoice();
+
   STATE.currentScene = sceneKey;
   currentScene       = scene;
   currentLineIndex   = 0;
@@ -73,6 +97,7 @@ function loadScene(sceneKey) {
 
   updateHUD();
   updateBackground(scene.bg);
+  updateBGM(scene.bg, scene.bgm || null);
   showCharacter(scene.character || null);
 
   document.getElementById('choices').innerHTML = '';
@@ -86,10 +111,27 @@ function loadScene(sceneKey) {
 }
 
 // ── 對話渲染 ─────────────────────────────────────────────
+function stopVoice() {
+  if (currentVoiceAudio) {
+    currentVoiceAudio.pause();
+    currentVoiceAudio.currentTime = 0;
+    currentVoiceAudio = null;
+  }
+}
+
 function showLine(index) {
   const line = currentScene.lines[index];
   currentLineIndex = index;
   document.getElementById('speaker-name').textContent = line.speaker || '';
+
+  // 每進入新台詞先停止上一個聲音 SFX，再決定是否播新的
+  stopVoice();
+  if (line.speaker === '聲音') {
+    currentVoiceAudio = new Audio('assets/sfx/sfx_voice.mp3');
+    currentVoiceAudio.volume = 0.85;
+    currentVoiceAudio.play().catch(() => {});
+  }
+
   startTypewriter(line.text);
 }
 
@@ -120,7 +162,7 @@ function skipTypewriter() {
 
 // ── 點擊處理 ─────────────────────────────────────────────
 function onGameClick() {
-  if (isTransitioning || isShowingChoices) return;
+  if (isTransitioning || isShowingChoices || isMinigameActive) return;
   if (isTyping) { skipTypewriter(); return; }
 
   if (currentScene.lines && currentLineIndex < currentScene.lines.length - 1) {
@@ -299,6 +341,25 @@ function tryLoadBg(src, onSuccess, onFail) {
   img.src = src;
 }
 
+// ── 音樂 / 音效 ───────────────────────────────────────────
+function updateBGM(bgName, override) {
+  const src = override
+    ? `assets/sfx/${override}.mp3`
+    : (BGM_MAP[bgName] || null);
+  if (!src || src === currentBgmSrc) return;
+  currentBgmSrc = src;
+  bgmPlayer.pause();
+  bgmPlayer.src         = src;
+  bgmPlayer.currentTime = 0;
+  bgmPlayer.play().catch(() => {});
+}
+
+function playOnce(src, volume = 0.7) {
+  const a = new Audio(src);
+  a.volume = volume;
+  a.play().catch(() => {});
+}
+
 // ── HUD 更新 ─────────────────────────────────────────────
 function updateHUD() {
   document.getElementById('money').textContent = STATE.money.toLocaleString();
@@ -307,11 +368,13 @@ function updateHUD() {
 
 // ── 小遊戲切換 ────────────────────────────────────────────
 function triggerMinigame(label, onGood, onMiss) {
+  isMinigameActive = true;
   document.getElementById('game').style.display = 'none';
   const canvas = document.getElementById('minigame-canvas');
   canvas.style.display = 'block';
 
   startMinigame(canvas, label, (result) => {
+    isMinigameActive = false;
     STATE.addMinigameResult(result);
     canvas.style.display = 'none';
     document.getElementById('game').style.display = 'block';
@@ -321,6 +384,12 @@ function triggerMinigame(label, onGood, onMiss) {
 
 // ── 結局畫面 ─────────────────────────────────────────────
 function showEnding() {
+  currentBgmSrc         = 'assets/sfx/bgm_ending.mp3';
+  bgmPlayer.pause();
+  bgmPlayer.src         = currentBgmSrc;
+  bgmPlayer.currentTime = 0;
+  bgmPlayer.play().catch(() => {});
+
   STATE.unlockAchievement('reconciled');
   document.getElementById('game').style.display = 'none';
   const screen = document.getElementById('ending-screen');

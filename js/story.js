@@ -375,7 +375,7 @@ const STORY = {
   },
 
   minigame2_intro: {
-    bg: 'field_day', character: 'archie',
+    bg: 'field_day', character: 'archie_young',
     lines: [
       { speaker: '旁白',   text: '那個年輕人就是 Archie Graham——Moonlight Graham，年輕時的樣子。' },
       { speaker: 'Archie', text: '我在找一個能讓我打完那場未完成比賽的地方。' },
@@ -390,7 +390,7 @@ const STORY = {
   },
 
   minigame2_good: {
-    bg: 'field_day', character: 'archie',
+    bg: 'field_day', character: 'archie_young',
     lines: [
       { speaker: '旁白',   text: '球飛了出去。一記安打。Archie 跑上了一壘。' },
       { speaker: '旁白',   text: '他停下來，望著手中的球棒，眼眶紅了。' },
@@ -400,7 +400,7 @@ const STORY = {
   },
 
   minigame2_miss: {
-    bg: 'field_day', character: 'archie',
+    bg: 'field_day', character: 'archie_young',
     lines: [
       { speaker: '旁白',   text: '球飛過，揮空了。Archie 放下球棒，卻在微笑。' },
       { speaker: 'Archie', text: '能站在這裡……比任何安打都值得。' },
@@ -409,24 +409,31 @@ const STORY = {
   },
 
   scene9: {
-    bg: 'field_night', character: null,
+    bg: 'field_night', bgm: 'bgm_climax', character: null,
     lines: [
-      { speaker: '旁白',      text: '比賽繼續著。Archie 在場上，和鬼魂球員們一起打球。' },
-      { speaker: '旁白',      text: '然後——Karin 從看台上站起來，踩空了。' },
-      { speaker: 'Ray',       text: '（衝過去）Karin！' },
-      { speaker: '旁白',      text: '女孩噎住了，臉色蒼白。' },
-      { speaker: '旁白',      text: 'Archie 站在白線前。' },
-      { speaker: '旁白',      text: '白線這一側，是球場，是他等了一輩子的夢。跨過去，就再也無法回來。' },
-      { speaker: '旁白',      text: '他跨了過去。' },
-      { speaker: '旁白',      text: '他的身影老去，成了照顧這個小鎮幾十年的老醫生。' },
+      { speaker: '旁白', text: '比賽繼續著。Archie 在場上，和鬼魂球員們一起打球。' },
+      { speaker: '旁白', text: '然後——Karin 從看台上站起來，踩空了。' },
+      { speaker: 'Ray',  text: '（衝過去）Karin！' },
+      { speaker: '旁白', text: '女孩噎住了，臉色蒼白。' },
+      { speaker: '旁白', text: 'Archie 站在白線前。' },
+      { speaker: '旁白', text: '白線這一側，是球場，是他等了一輩子的夢。跨過去，就再也無法回來。' },
+      { speaker: '旁白', text: '他跨了過去。' },
+      { speaker: '旁白', text: '他的身影老去，成了照顧這個小鎮幾十年的老醫生。' },
+    ],
+    next: 'scene9_doc'
+  },
+
+  scene9_doc: {
+    bg: 'field_night', bgm: 'bgm_climax', character: 'archie_old',
+    lines: [
       { speaker: 'Doc Graham', text: '（穩穩地照顧著 Karin）沒事了，孩子。' },
-      { speaker: '旁白',      text: '他轉頭，對 Ray 點了點頭，然後走進黑暗裡，消失了。' },
+      { speaker: '旁白',       text: '他轉頭，對 Ray 點了點頭，然後走進黑暗裡，消失了。' },
     ],
     next: 'scene10'
   },
 
   scene10: {
-    bg: 'field_night', character: 'john',
+    bg: 'field_night', bgm: 'bgm_climax', character: 'john',
     lines: [
       { speaker: '旁白', text: '夜深了。球員們陸陸續續走回玉米田。' },
       { speaker: '旁白', text: '最後一個人摘下捕手面具，轉過身來。' },
@@ -441,7 +448,7 @@ const STORY = {
   },
 
   scene10_a: {
-    bg: 'field_night', character: 'john',
+    bg: 'field_night', bgm: 'bgm_climax', character: 'john',
     lines: [
       { speaker: 'Ray',  text: '（哽咽）……爸。' },
       { speaker: 'John', text: '（愣了一下，緩緩點頭）嗯。' },
@@ -452,7 +459,7 @@ const STORY = {
   },
 
   scene10_b: {
-    bg: 'field_night', character: 'john',
+    bg: 'field_night', bgm: 'bgm_climax', character: 'john',
     lines: [
       { speaker: 'Ray',  text: '（聲音沙啞）你……想打一場嗎？' },
       { speaker: 'John', text: '（沉默片刻，嘴角上揚）我一直在等這句話。' },
@@ -462,7 +469,7 @@ const STORY = {
   },
 
   minigame3_intro: {
-    bg: 'field_night', character: 'john',
+    bg: 'field_night', bgm: 'bgm_climax', character: 'john',
     lines: [
       { speaker: '旁白', text: '就在這片他親手蓋起來的球場上，Ray 第一次和他的父親打球。' },
     ],
@@ -473,7 +480,7 @@ const STORY = {
   },
 
   minigame3_good: {
-    bg: 'field_night', character: 'john',
+    bg: 'field_night', bgm: 'bgm_climax', character: 'john',
     lines: [
       { speaker: '旁白', text: '球穩穩落進手套。父親站在那裡，微笑著看著他。' },
       { speaker: 'John', text: '你比我想像中還要厲害。' },
@@ -485,7 +492,7 @@ const STORY = {
   },
 
   minigame3_miss: {
-    bg: 'field_night', character: 'john',
+    bg: 'field_night', bgm: 'bgm_climax', character: 'john',
     lines: [
       { speaker: '旁白', text: '球滾落了。父親走上前，把球撿起來，輕輕放回 Ray 手中。' },
       { speaker: 'John', text: '沒關係。' },
