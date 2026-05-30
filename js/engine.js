@@ -282,9 +282,9 @@ function updateBackground(bgName) {
   el.style.opacity = '0';
 
   setTimeout(() => {
-    tryLoadBg(`assets/bg/${bgName}.jpg`,
+    tryLoadBg(`assets/bg/${bgName}.png`,
       (url) => { el.style.backgroundImage = `url('${url}')`; el.style.opacity = '1'; },
-      ()    => tryLoadBg(`assets/bg/${bgName}.png`,
+      ()    => tryLoadBg(`assets/bg/${bgName}.jpg`,
         (url) => { el.style.backgroundImage = `url('${url}')`; el.style.opacity = '1'; },
         ()    => { el.style.backgroundImage = BG_GRADIENTS[bgName] || BG_GRADIENTS.field_night; el.style.opacity = '1'; }
       )
