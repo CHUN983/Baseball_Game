@@ -282,17 +282,21 @@ function updateBackground(bgName) {
   el.style.opacity = '0';
 
   setTimeout(() => {
-    const img = new Image();
-    img.onload = () => {
-      el.style.backgroundImage = `url('../assets/bg/${bgName}.png')`;
-      el.style.opacity = '1';
-    };
-    img.onerror = () => {
-      el.style.backgroundImage = BG_GRADIENTS[bgName] || BG_GRADIENTS.field_night;
-      el.style.opacity = '1';
-    };
-    img.src = `../assets/bg/${bgName}.png`;
+    tryLoadBg(`assets/bg/${bgName}.jpg`,
+      (url) => { el.style.backgroundImage = `url('${url}')`; el.style.opacity = '1'; },
+      ()    => tryLoadBg(`assets/bg/${bgName}.png`,
+        (url) => { el.style.backgroundImage = `url('${url}')`; el.style.opacity = '1'; },
+        ()    => { el.style.backgroundImage = BG_GRADIENTS[bgName] || BG_GRADIENTS.field_night; el.style.opacity = '1'; }
+      )
+    );
   }, 300);
+}
+
+function tryLoadBg(src, onSuccess, onFail) {
+  const img = new Image();
+  img.onload  = () => onSuccess(src);
+  img.onerror = onFail;
+  img.src = src;
 }
 
 // ── HUD 更新 ─────────────────────────────────────────────
