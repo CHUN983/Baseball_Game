@@ -1,0 +1,430 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: Georgia, 'Times New Roman', serif;
+  background: #000;
+  cursor: default;
+}
+
+/* ── 標題畫面 ─────────────────────────────────── */
+#title-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(160deg, #050518 0%, #0d1f0d 60%, #1B3A1B 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+}
+
+#title-content {
+  text-align: center;
+  color: #eee8d5;
+}
+
+.title-voice {
+  font-style: italic;
+  color: rgba(240, 208, 128, 0.7);
+  font-size: 16px;
+  letter-spacing: 1px;
+  margin-bottom: 28px;
+}
+
+#title-content h1 {
+  font-size: 62px;
+  color: #f0d080;
+  letter-spacing: 6px;
+  text-shadow: 0 0 40px rgba(240, 208, 128, 0.4);
+  margin-bottom: 10px;
+}
+
+.title-sub {
+  font-size: 20px;
+  color: rgba(240, 208, 128, 0.5);
+  letter-spacing: 4px;
+  margin-bottom: 50px;
+}
+
+#start-btn {
+  background: transparent;
+  border: 1px solid rgba(240, 208, 128, 0.6);
+  color: #f0d080;
+  font-family: inherit;
+  font-size: 18px;
+  padding: 14px 48px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.25s, border-color 0.25s;
+  margin-bottom: 30px;
+}
+
+#start-btn:hover {
+  background: rgba(240, 208, 128, 0.12);
+  border-color: rgba(240, 208, 128, 1);
+}
+
+.title-hint {
+  font-size: 13px;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 1px;
+}
+
+/* ── 主遊戲 ────────────────────────────────────── */
+#game {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.5s ease;
+}
+
+/* ── HUD ────────────────────────────────────────── */
+#hud {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.hud-item {
+  background: rgba(0, 0, 0, 0.6);
+  color: #f0d080;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 15px;
+  font-family: 'Courier New', monospace;
+  border: 1px solid rgba(240, 208, 128, 0.25);
+  letter-spacing: 0.5px;
+}
+
+/* ── 對話框 ─────────────────────────────────────── */
+#dialogue-box {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-height: 32vh;
+  background: linear-gradient(180deg,
+    rgba(4, 4, 18, 0.82) 0%,
+    rgba(4, 4, 18, 0.97) 100%);
+  border-top: 1px solid rgba(240, 208, 128, 0.2);
+  padding: 22px 48px 30px;
+  z-index: 10;
+}
+
+#speaker-name {
+  font-size: 15px;
+  font-weight: bold;
+  color: #f0d080;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  min-height: 20px;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+}
+
+#dialogue-text {
+  font-size: 20px;
+  color: #eee8d5;
+  line-height: 1.85;
+  min-height: 64px;
+  max-width: 860px;
+}
+
+/* ── 選擇按鈕 ───────────────────────────────────── */
+#choices {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.choice-btn {
+  background: rgba(240, 208, 128, 0.06);
+  border: 1px solid rgba(240, 208, 128, 0.35);
+  color: #e8d88a;
+  padding: 13px 22px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  max-width: 680px;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+  line-height: 1.5;
+}
+
+.choice-btn:hover {
+  background: rgba(240, 208, 128, 0.18);
+  border-color: rgba(240, 208, 128, 0.75);
+  transform: translateX(4px);
+}
+
+.choice-btn:active {
+  transform: translateX(2px);
+}
+
+#click-hint {
+  position: absolute;
+  bottom: 16px;
+  right: 28px;
+  color: rgba(240, 208, 128, 0.45);
+  font-size: 13px;
+  font-family: 'Courier New', monospace;
+  animation: pulse 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.9; }
+}
+
+/* ── 小遊戲 Canvas ──────────────────────────────── */
+#minigame-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  cursor: pointer;
+}
+
+/* ── 結局畫面 ───────────────────────────────────── */
+#ending-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, #050518 0%, #0a140a 50%, #050518 100%);
+  display: none;
+  justify-content: center;
+  overflow-y: auto;
+  z-index: 200;
+}
+
+#ending-content {
+  max-width: 680px;
+  width: 90%;
+  margin: 60px auto 80px;
+  padding: 0 20px;
+  color: #eee8d5;
+  font-size: 16px;
+  line-height: 2;
+}
+
+#ending-content h1 {
+  color: #f0d080;
+  font-size: 30px;
+  text-align: center;
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+}
+
+.ending-quote {
+  text-align: center;
+  color: rgba(240, 208, 128, 0.5);
+  font-style: italic;
+  font-size: 14px;
+  margin-bottom: 40px;
+  letter-spacing: 1px;
+}
+
+.stat-block {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.stat-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 15px;
+}
+
+.stat-line:last-child { border-bottom: none; }
+.stat-label { color: rgba(255,255,255,0.5); }
+.stat-value { color: #eee8d5; font-family: 'Courier New', monospace; }
+.stat-value.negative { color: #ff9080; }
+
+.score-display {
+  text-align: center;
+  margin: 28px 0;
+  font-size: 52px;
+  font-weight: bold;
+  color: #f0d080;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 30px rgba(240, 208, 128, 0.35);
+}
+
+.section-title {
+  color: #f0d080;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+  margin: 28px 0 14px;
+}
+
+.voice-item {
+  color: #a8d8a8;
+  font-style: italic;
+  padding: 5px 0;
+  font-size: 15px;
+}
+
+.achievement {
+  padding: 6px 0;
+  font-size: 15px;
+  color: rgba(255,255,255,0.25);
+}
+
+.achievement.unlocked {
+  color: #f0d080;
+}
+
+.achievement .ach-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.3);
+  margin-left: 8px;
+}
+
+.achievement.unlocked .ach-desc {
+  color: rgba(240, 208, 128, 0.45);
+}
+
+#restart-btn {
+  display: block;
+  margin: 40px auto 0;
+  background: transparent;
+  border: 1px solid rgba(240, 208, 128, 0.4);
+  color: #f0d080;
+  font-family: inherit;
+  font-size: 15px;
+  padding: 12px 40px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+
+#restart-btn:hover {
+  background: rgba(240, 208, 128, 0.1);
+}
+
+/* ── 角色立繪 ───────────────────────────────────── */
+#character-portrait {
+  position: absolute;
+  left: 48px;
+  bottom: calc(32vh + 24px);
+  z-index: 8;
+  text-align: center;
+  transition: opacity 0.35s ease;
+}
+
+#char-img {
+  width: 130px;
+  height: 178px;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 6px;
+  border: 1px solid rgba(240, 208, 128, 0.3);
+  display: block;
+}
+
+#char-placeholder {
+  width: 130px;
+  height: 178px;
+  border-radius: 6px;
+  border: 1px solid rgba(240, 208, 128, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#char-placeholder .char-initial {
+  font-size: 52px;
+  opacity: 0.6;
+  line-height: 1;
+}
+
+#char-placeholder .char-name-small {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 1px;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  padding: 0 8px;
+}
+
+#char-label {
+  margin-top: 7px;
+  font-size: 12px;
+  color: rgba(240, 208, 128, 0.55);
+  letter-spacing: 1.5px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+}
+
+/* ── HUD 變動動畫 ────────────────────────────────── */
+.delta-float {
+  position: fixed;
+  font-family: 'Courier New', monospace;
+  font-size: 17px;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 999;
+  animation: deltaFloat 1.6s ease-out forwards;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+.delta-float.positive { color: #80ee80; }
+.delta-float.negative { color: #ff8888; }
+.delta-float.days     { color: #88aaff; }
+
+@keyframes deltaFloat {
+  0%   { opacity: 1;   transform: translateY(0px) scale(1); }
+  15%  { opacity: 1;   transform: translateY(-6px) scale(1.1); }
+  100% { opacity: 0;   transform: translateY(-52px) scale(0.95); }
+}
+
+.hud-item.flash-positive {
+  animation: hudFlashPos 0.6s ease-out;
+}
+.hud-item.flash-negative {
+  animation: hudFlashNeg 0.6s ease-out;
+}
+.hud-item.flash-days {
+  animation: hudFlashDays 0.6s ease-out;
+}
+
+@keyframes hudFlashPos {
+  0%, 100% { border-color: rgba(240,208,128,0.25); }
+  40%       { border-color: rgba(128,238,128,0.9); background: rgba(128,238,128,0.18); }
+}
+@keyframes hudFlashNeg {
+  0%, 100% { border-color: rgba(240,208,128,0.25); }
+  40%       { border-color: rgba(255,136,136,0.9); background: rgba(255,136,136,0.18); }
+}
+@keyframes hudFlashDays {
+  0%, 100% { border-color: rgba(240,208,128,0.25); }
+  40%       { border-color: rgba(136,170,255,0.9); background: rgba(136,170,255,0.18); }
+}

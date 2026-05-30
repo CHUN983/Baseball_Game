@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>夢幻成真 — Field of Dreams</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 標題畫面 -->
+  <div id="title-screen">
+    <div id="title-content">
+      <div class="title-voice">"If you build it, he will come."</div>
+      <h1>夢幻成真</h1>
+      <div class="title-sub">Field of Dreams</div>
+      <button id="start-btn">開始遊戲</button>
+      <div class="title-hint">改編自 1989 年電影《夢幻成真》</div>
+    </div>
+  </div>
+
+  <!-- 主遊戲畫面 -->
+  <div id="game" style="display:none">
+    <div id="bg"></div>
+
+    <!-- 角色立繪 -->
+    <div id="character-portrait" style="display:none">
+      <img id="char-img" src="" alt="" style="display:none">
+      <div id="char-placeholder"></div>
+      <div id="char-label"></div>
+    </div>
+
+    <div id="hud">
+      <div class="hud-item">💵 $<span id="money">50,000</span></div>
+      <div class="hud-item">📅 +<span id="days">0</span> 天</div>
+    </div>
+    <div id="dialogue-box">
+      <div id="speaker-name"></div>
+      <div id="dialogue-text"></div>
+      <div id="choices"></div>
+      <div id="click-hint">▼ 點擊繼續</div>
+    </div>
+  </div>
+
+  <!-- Canvas 小遊戲層 -->
+  <canvas id="minigame-canvas" style="display:none"></canvas>
+
+  <!-- 結局畫面 -->
+  <div id="ending-screen" style="display:none">
+    <div id="ending-content"></div>
+  </div>
+
+  <script src="js/story.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/minigame.js"></script>
+  <script src="js/engine.js"></script>
+</body>
+</html>
