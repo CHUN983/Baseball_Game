@@ -81,12 +81,23 @@ function startMinigame(canvas, config, callback) {
     const BALLRATE  = cfg.ballRate || 0.28;
     const FOUL_RATE = 0.30;
 
-    // 版面常數（好球帶＋本壘板靠近 Ray，球從右側投手飛向左側打者）
-    const PITCHER  = { x: W * 0.72, y: H * 0.35 };
-    const ZONE     = { x: W * 0.26, y: H * 0.30, w: W * 0.16, h: H * 0.32 };
+    // 直向手機偵測（H 顯著大於 W）
+    const isPortrait = H > W * 1.2;
+
+    // 版面常數（直向時改用 W 為基準，避免比例失衡）
+    const PITCHER  = isPortrait
+      ? { x: W * 0.75, y: H * 0.32 }
+      : { x: W * 0.72, y: H * 0.35 };
+    const ZONE     = isPortrait
+      ? { x: W * 0.22, y: H * 0.28, w: W * 0.22, h: W * 0.32 }
+      : { x: W * 0.26, y: H * 0.30, w: W * 0.16, h: H * 0.32 };
     const ZONE_CX  = ZONE.x + ZONE.w / 2;
     const ZONE_CY  = ZONE.y + ZONE.h / 2;
-    const HOME     = { x: W * 0.34, y: H * 0.78 };
+    const HOME     = { x: ZONE_CX, y: H * 0.78 };
+
+    // 角色立繪高度：直向時以 W 為上限，避免過高
+    const BATTER_H  = Math.min(H * 0.60, W * 0.40);
+    const PITCHER_H = Math.min(H * 0.38, W * 0.26);
 
     // 球數
     let balls = 0, strikes = 0;
@@ -310,8 +321,7 @@ function startMinigame(canvas, config, callback) {
     }
 
     function drawPitcherPortrait() {
-      // 投手立繪在右側，較小（模擬遠景距離感）
-      const ph = H * 0.38;
+      const ph = PITCHER_H;
       const py = H * 0.56 - ph;
       const px = W * 0.73;
 
@@ -350,8 +360,7 @@ function startMinigame(canvas, config, callback) {
     }
 
     function drawBatter() {
-      // 打者永遠是 Ray，在左側
-      const bh  = H * 0.60;
+      const bh  = BATTER_H;
       const by  = H - bh - H * 0.04;
       const bx  = W * 0.02;
 
@@ -464,8 +473,10 @@ function startMinigame(canvas, config, callback) {
     }
 
     function drawSwingArc() {
-      const pivot  = { x: W * 0.17, y: H * 0.63 };
-      const radius = W * 0.13;
+      // pivot 跟著打者實際位置走，不再用固定的 H*0.63
+      const bh     = BATTER_H;
+      const pivot  = { x: W * 0.17, y: (H - bh - H * 0.04) + bh * 0.44 };
+      const radius = isPortrait ? Math.min(W * 0.13, bh * 0.35) : W * 0.13;
       const startA = -Math.PI * 0.88;
       const sweep  = Math.PI * 0.82 * Math.min(1, swingArc);
       const fade   = Math.max(0, 0.9 - swingArc * 0.55);
