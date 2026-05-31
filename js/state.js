@@ -20,9 +20,6 @@ const STATE = {
 
   addMinigameResult(result) {
     this.minigameResults.push(result);
-    if (this.minigameResults.length === 3 && this.minigameResults.every(r => r)) {
-      this.unlockAchievement('perfect_hitter');
-    }
   },
 
   calcScore() {

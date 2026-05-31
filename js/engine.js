@@ -467,7 +467,6 @@ function showEnding() {
     { key: 'annie_supporter',  label: 'Annie 的力量',     desc: '全力說服 Annie 一起相信' },
     { key: 'craftsman',        label: '球場工匠',         desc: '親手建造球場' },
     { key: 'go_the_distance',  label: 'Go the distance.', desc: '帶 Mann 去 Fenway，讓他也聽見聲音' },
-    { key: 'perfect_hitter',   label: '完美打擊',         desc: '三場小遊戲全部打好' },
     { key: 'reconciled',       label: '與父和解',         desc: '完成了這趟旅程' },
     { key: 'ending_perfect',   label: '燈火長明',         desc: '三場全勝，完滿收場' },
     { key: 'ending_broken',    label: '光不因你而滅',     desc: '三場全敗，車隊依然來了' },
