@@ -1,4 +1,4 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
 
 body {
   width: 100vw;
@@ -427,4 +427,98 @@ body {
 @keyframes hudFlashDays {
   0%, 100% { border-color: rgba(240,208,128,0.25); }
   40%       { border-color: rgba(136,170,255,0.9); background: rgba(136,170,255,0.18); }
+}
+
+/* ── 觸控裝置：關掉 hover 位移效果（黏住問題）───── */
+@media (hover: none) {
+  .choice-btn:hover {
+    transform: none;
+    background: rgba(240, 208, 128, 0.06);
+    border-color: rgba(240, 208, 128, 0.35);
+  }
+}
+
+/* ── 平板 / 大手機（≤768px）──────────────────────── */
+@media (max-width: 768px) {
+  #title-content h1    { font-size: 46px; letter-spacing: 4px; }
+  .title-sub           { font-size: 17px; margin-bottom: 36px; }
+
+  #dialogue-box        { padding: 18px 28px 28px; }
+  #dialogue-text       { font-size: 18px; }
+
+  .choice-btn          { max-width: 100%; font-size: 15px; }
+
+  #character-portrait  { left: 20px; }
+  #char-img,
+  #char-placeholder    { width: 110px; height: 150px; }
+  #char-placeholder .char-initial { font-size: 44px; }
+}
+
+/* ── 手機（≤480px）───────────────────────────────── */
+@media (max-width: 480px) {
+  /* 標題畫面 */
+  .title-voice {
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  #title-content h1 {
+    font-size: 32px;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+  .title-sub {
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-bottom: 28px;
+  }
+  #start-btn {
+    font-size: 16px;
+    padding: 12px 32px;
+    letter-spacing: 2px;
+  }
+  .title-hint { font-size: 12px; }
+
+  /* HUD */
+  #hud           { top: 14px; right: 14px; gap: 8px; }
+  .hud-item      { font-size: 13px; padding: 5px 11px; }
+
+  /* 對話框：縮緊 padding，允許捲動防止選項被截斷 */
+  #dialogue-box {
+    padding: 14px 18px 20px;
+    min-height: 36vh;
+    max-height: 62vh;
+    overflow-y: auto;
+  }
+  #speaker-name  { font-size: 12px; margin-bottom: 8px; }
+  #dialogue-text { font-size: 16px; line-height: 1.75; min-height: 40px; }
+  #click-hint    { font-size: 12px; bottom: 12px; right: 16px; }
+
+  /* 選擇按鈕 */
+  #choices       { margin-top: 12px; gap: 8px; }
+  .choice-btn    { max-width: 100%; font-size: 14px; padding: 11px 14px; }
+
+  /* 角色立繪：縮小並貼左，不遮住太多場景 */
+  #character-portrait {
+    left: 10px;
+    bottom: calc(36vh + 14px);
+  }
+  #char-img,
+  #char-placeholder    { width: 80px; height: 110px; }
+  #char-placeholder .char-initial { font-size: 34px; }
+  #char-placeholder .char-name-small { font-size: 10px; }
+  #char-label          { font-size: 10px; margin-top: 5px; }
+
+  /* 結局畫面 */
+  #ending-content {
+    margin: 36px auto 52px;
+    font-size: 14px;
+    line-height: 1.9;
+  }
+  #ending-content h1   { font-size: 24px; letter-spacing: 3px; }
+  .ending-quote        { font-size: 13px; margin-bottom: 28px; }
+  .score-display       { font-size: 38px; margin: 20px 0; }
+  .stat-line           { font-size: 13px; }
+  .section-title       { font-size: 12px; }
+  .achievement         { font-size: 13px; }
+  #restart-btn         { font-size: 14px; padding: 11px 32px; }
 }
