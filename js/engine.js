@@ -176,7 +176,7 @@ function onGameClick() {
 function afterLines() {
   if (currentScene.isEnding)  { showEnding(); return; }
   if (currentScene.minigame)  {
-    triggerMinigame(currentScene.minigameLabel || '', currentScene.onGood, currentScene.onMiss);
+    triggerMinigame(currentScene.minigameLabel || '', currentScene.onGood, currentScene.onMiss, currentScene.pitchConfig || {});
     return;
   }
   if (currentScene.choices && currentScene.choices.length > 0) {
@@ -367,17 +367,25 @@ function updateHUD() {
 }
 
 // ── 小遊戲切換 ────────────────────────────────────────────
-function triggerMinigame(label, onGood, onMiss) {
+function triggerMinigame(label, onGood, onMiss, pitchConfig) {
   isMinigameActive = true;
-  document.getElementById('game').style.display = 'none';
+
+  // 只隱藏 UI 元素，保留 #bg 背景圖透過 canvas 顯示
+  document.getElementById('dialogue-box').style.display = 'none';
+  document.getElementById('hud').style.display          = 'none';
+  document.getElementById('character-portrait').style.display = 'none';
+
   const canvas = document.getElementById('minigame-canvas');
   canvas.style.display = 'block';
 
-  startMinigame(canvas, label, (result) => {
+  const config = Object.assign({ label }, pitchConfig);
+
+  startMinigame(canvas, config, (result) => {
     isMinigameActive = false;
     STATE.addMinigameResult(result);
     canvas.style.display = 'none';
-    document.getElementById('game').style.display = 'block';
+    document.getElementById('dialogue-box').style.display = '';
+    document.getElementById('hud').style.display          = '';
     loadScene(result ? onGood : onMiss);
   });
 }

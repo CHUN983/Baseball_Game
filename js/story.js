@@ -180,6 +180,7 @@ const STORY = {
     ],
     minigame: true,
     minigameLabel: 'Shoeless Joe 投出一顆快速球！',
+    pitchConfig: { speed: 0.0072, ballRate: 0.22, charKey: 'ray' },
     onGood: 'minigame1_good',
     onMiss: 'minigame1_miss'
   },
@@ -385,6 +386,7 @@ const STORY = {
     ],
     minigame: true,
     minigameLabel: 'Moonlight Graham 的打席——他等了整整一生！',
+    pitchConfig: { speed: 0.0065, ballRate: 0.34, charKey: 'archie_young' },
     onGood: 'minigame2_good',
     onMiss: 'minigame2_miss'
   },
@@ -475,6 +477,7 @@ const STORY = {
     ],
     minigame: true,
     minigameLabel: '父子傳接球——人生中最重要的一場。',
+    pitchConfig: { speed: 0.006, ballRate: 0.10, charKey: 'ray' },
     onGood: 'minigame3_good',
     onMiss: 'minigame3_miss'
   },
