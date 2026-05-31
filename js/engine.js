@@ -71,8 +71,16 @@ function init() {
     }
   }
 
+  if (STATE.getHistory().length > 0) {
+    document.getElementById('history-btn').style.display = 'block';
+  }
+
   document.getElementById('continue-btn').addEventListener('click', continueGame);
   document.getElementById('start-btn').addEventListener('click', startNewGame);
+  document.getElementById('history-btn').addEventListener('click', showHistory);
+  document.getElementById('history-close').addEventListener('click', () => {
+    document.getElementById('history-modal').style.display = 'none';
+  });
   document.getElementById('game').addEventListener('click', onGameClick);
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'Enter') {
@@ -429,6 +437,7 @@ function showEnding() {
   const score      = STATE.calcScore();
   const isNewBest  = STATE.updateBestScore(score);
   const bestScore  = STATE.getBestScore();
+  STATE.addHistory(score);
   STATE.clearSave(); // 遊戲完成，清除進度存檔
   const loanPenalty = STATE.hasFlag('has_loan') ? 3000 : 0;
   const mgSymbols   = STATE.minigameResults.map(r => r ? '⚾ 安打' : '✘ 揮空').join('　');
@@ -490,6 +499,33 @@ function showEnding() {
 
     <button id="restart-btn" onclick="location.reload()">再玩一次</button>
   `;
+}
+
+// ── 歷史紀錄 Modal ────────────────────────────────────────
+function showHistory() {
+  const history  = STATE.getHistory();
+  const best     = STATE.getBestScore();
+  const listEl   = document.getElementById('history-list');
+
+  if (history.length === 0) {
+    listEl.innerHTML = '<div class="history-empty">尚無遊玩紀錄</div>';
+  } else {
+    listEl.innerHTML = history
+      .slice()
+      .sort((a, b) => b.score - a.score)
+      .map((entry, i) => {
+        const isBest = entry.score === best;
+        const d      = new Date(entry.date);
+        const dateStr = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+        return `<div class="history-row${isBest ? ' history-best' : ''}">
+          <span class="history-rank">${i + 1}</span>
+          <span class="history-score">${entry.score.toLocaleString()}</span>
+          <span class="history-date">${dateStr}</span>
+        </div>`;
+      }).join('');
+  }
+
+  document.getElementById('history-modal').style.display = 'flex';
 }
 
 window.addEventListener('load', init);

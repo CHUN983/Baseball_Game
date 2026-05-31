@@ -74,6 +74,23 @@ const STATE = {
     } catch (_) { return null; }
   },
 
+  // ── 歷史紀錄（最多保留 10 筆）────────────────────────────
+  getHistory() {
+    try {
+      const raw = localStorage.getItem('fod_history');
+      return raw ? JSON.parse(raw) : [];
+    } catch (_) { return []; }
+  },
+
+  addHistory(score) {
+    try {
+      const list = this.getHistory();
+      list.unshift({ score, date: new Date().toISOString() });
+      if (list.length > 10) list.pop();
+      localStorage.setItem('fod_history', JSON.stringify(list));
+    } catch (_) {}
+  },
+
   // ── 最高分（跨局持久）────────────────────────────────────
   getBestScore() {
     try {

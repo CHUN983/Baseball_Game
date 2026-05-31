@@ -85,6 +85,96 @@ body {
   margin-bottom: 20px;
 }
 
+#history-btn {
+  background: transparent;
+  border: none;
+  color: rgba(240, 208, 128, 0.40);
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-bottom: 24px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+#history-btn:hover { color: rgba(240, 208, 128, 0.80); }
+
+/* ── 歷史紀錄 Modal ────────────────────────────── */
+#history-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+}
+
+#history-content {
+  background: linear-gradient(160deg, #090920 0%, #0d1f0d 100%);
+  border: 1px solid rgba(240,208,128,0.22);
+  border-radius: 6px;
+  padding: 36px 40px 28px;
+  width: min(460px, 88vw);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+#history-title {
+  color: #f0d080;
+  font-size: 18px;
+  letter-spacing: 4px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+#history-list { margin-bottom: 24px; }
+
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 14px;
+}
+.history-row:last-child { border-bottom: none; }
+
+.history-rank { color: rgba(240,208,128,0.45); width: 28px; font-family: 'Courier New', monospace; }
+.history-score { color: #f0d080; font-family: 'Courier New', monospace; font-weight: bold; font-size: 16px; }
+.history-date  { color: rgba(255,255,255,0.35); font-size: 12px; }
+.history-best  .history-score { color: #a0e0a0; }
+.history-best  .history-rank::after { content: ' ★'; color: #a0e0a0; }
+
+.history-empty {
+  text-align: center;
+  color: rgba(255,255,255,0.25);
+  font-size: 14px;
+  padding: 24px 0;
+  letter-spacing: 1px;
+}
+
+#history-close {
+  display: block;
+  margin: 0 auto;
+  background: transparent;
+  border: 1px solid rgba(240,208,128,0.35);
+  color: rgba(240,208,128,0.65);
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 2px;
+  padding: 8px 32px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s, border-color 0.2s;
+}
+#history-close:hover {
+  background: rgba(240,208,128,0.10);
+  border-color: rgba(240,208,128,0.70);
+}
+
 .title-hint {
   font-size: 13px;
   color: rgba(255,255,255,0.25);
