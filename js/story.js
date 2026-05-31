@@ -180,7 +180,7 @@ const STORY = {
     ],
     minigame: true,
     minigameLabel: 'Shoeless Joe 投出一顆快速球！',
-    pitchConfig: { speed: 0.0072, ballRate: 0.22, charKey: 'ray' },
+    pitchConfig: { speed: 0.0072, ballRate: 0.22, charKey: 'joe' },
     onGood: 'minigame1_good',
     onMiss: 'minigame1_miss'
   },
@@ -477,7 +477,7 @@ const STORY = {
     ],
     minigame: true,
     minigameLabel: '父子傳接球——人生中最重要的一場。',
-    pitchConfig: { speed: 0.006, ballRate: 0.10, charKey: 'ray' },
+    pitchConfig: { speed: 0.006, ballRate: 0.10, charKey: 'john' },
     onGood: 'minigame3_good',
     onMiss: 'minigame3_miss'
   },
