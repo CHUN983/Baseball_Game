@@ -53,6 +53,7 @@ let isTyping          = false;
 let isShowingChoices  = false;
 let isTransitioning   = false;   // 防止選擇後 click 立即穿透到 #game
 let isMinigameActive  = false;   // 小遊戲執行中，封鎖 engine 的 Space/click
+let endingTriggered   = false;   // 防止結局畫面重複觸發
 let typewriterTimeout = null;
 let charLoadId        = 0;       // 防止 showCharacter 的 stale async callback
 let currentCharKey    = null;
@@ -92,6 +93,7 @@ function init() {
 
 function startNewGame() {
   STATE.clearSave();
+  endingTriggered = false;
   document.getElementById('title-screen').style.display = 'none';
   document.getElementById('game').style.display = 'block';
   loadScene('prologue');
@@ -99,6 +101,7 @@ function startNewGame() {
 
 function continueGame() {
   if (!STATE.load()) { startNewGame(); return; }
+  endingTriggered = false;
   document.getElementById('title-screen').style.display = 'none';
   document.getElementById('game').style.display = 'block';
   loadScene(STATE.currentScene);
@@ -437,6 +440,9 @@ function showEnding() {
   bgmPlayer.currentTime = 0;
   bgmPlayer.play().catch(() => {});
 
+  if (endingTriggered) return;
+  endingTriggered = true;
+
   STATE.unlockAchievement('reconciled');
   const wins = STATE.minigameResults.filter(Boolean).length;
   if (wins === 3) STATE.unlockAchievement('ending_perfect');
@@ -449,7 +455,7 @@ function showEnding() {
   const score      = STATE.calcScore();
   const isNewBest  = STATE.updateBestScore(score);
   const bestScore  = STATE.getBestScore();
-  const endingKey  = STATE.currentScene; // ending_perfect / ending_normal / ending_broken
+  const endingKey  = resolveEndingScene(); // 直接算，不依賴 STATE.currentScene 時機
   STATE.addHistory(score, endingKey);
   STATE.clearSave(); // 遊戲完成，清除進度存檔
   const loanPenalty = STATE.hasFlag('has_loan') ? 3000 : 0;
