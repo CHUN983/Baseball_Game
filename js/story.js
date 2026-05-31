@@ -491,7 +491,7 @@ const STORY = {
       { speaker: 'John', text: '（搖搖頭）不用說。你蓋了這個地方，我來了。' },
       { speaker: 'John', text: '這就是你說的一切了。' },
     ],
-    next: 'ending'
+    next: 'ending_router'
   },
 
   minigame3_miss: {
@@ -502,18 +502,59 @@ const STORY = {
       { speaker: 'John', text: '你從來就不喜歡棒球——但你來了。' },
       { speaker: 'John', text: '你蓋了這個地方，讓我有機會回來……這就夠了，Ray。' },
     ],
-    next: 'ending'
+    next: 'ending_router'
   },
 
-  ending: {
-    bg: 'field_final', character: 'mann',
+  // ── 結局路由（依勝場數分流） ──────────────────────────────
+  ending_router: {
+    bg: 'field_final', bgm: 'bgm_climax',
+    isEndingRouter: true
+  },
+
+  // 3 勝：燈火長明
+  ending_perfect: {
+    bg: 'field_final', bgm: 'bgm_climax', character: 'mann',
+    lines: [
+      { speaker: '旁白', text: '那一夜，公路上排起了長長的車隊，從四面八方向這片球場駛來。' },
+      { speaker: 'Mann', text: '（凝視著車燈長龍）你做到了，Ray。三個聲音，你全都回應了。' },
+      { speaker: 'Ray',  text: '（喉嚨發緊）……他們真的來了。' },
+      { speaker: 'Mann', text: '他們不知道為什麼，但他們來了。因為這裡有他們失去已久的東西。' },
+      { speaker: 'Ray',  text: '是什麼？' },
+      { speaker: 'Mann', text: '重新相信自己的機會。' },
+      { speaker: '旁白', text: '球場的燈光亮了整夜。沒有人想離開。' },
+      { speaker: '旁白', text: 'Ray 站在那裡，想起那個孤注一擲的決定——' },
+      { speaker: '旁白', text: '他知道，那一刻他做對了。' },
+    ],
+    isEnding: true
+  },
+
+  // 1–2 勝：走完這段距離
+  ending_normal: {
+    bg: 'field_final', bgm: 'bgm_climax', character: 'mann',
     lines: [
       { speaker: '旁白', text: '那一夜，公路上排起了長長的車隊，從四面八方向這片球場駛來。' },
       { speaker: 'Mann', text: '（站在 Ray 身旁）人們會來的，Ray。' },
       { speaker: 'Mann', text: '他們不知道為什麼，但他們會來。因為這裡有他們需要的東西。' },
       { speaker: 'Ray',  text: '（望著滿天星斗）是什麼？' },
       { speaker: 'Mann', text: '重新相信自己的機會。' },
+      { speaker: '旁白', text: '不是每一件事都完美，但 Ray 走完了這段距離。' },
+      { speaker: '旁白', text: '也許，這就已經夠了。' },
     ],
     isEnding: true
-  }
+  },
+
+  // 0 勝：光不因你而滅
+  ending_broken: {
+    bg: 'field_night', bgm: 'bgm_climax', character: null,
+    lines: [
+      { speaker: '旁白', text: '三次揮棒，三次落空。Ray 獨自站在靜默的球場上。' },
+      { speaker: 'Ray',  text: '（望著空曠的內野）……我什麼都沒做好。' },
+      { speaker: '旁白', text: '就在這時，遠處的公路上出現了一盞車燈。' },
+      { speaker: '旁白', text: '然後是第二盞，第三盞——越來越多，從四面八方湧來。' },
+      { speaker: 'Ray',  text: '（難以置信地抬起頭）他們……還是來了？' },
+      { speaker: '旁白', text: '球場的燈光亮著。不為任何人的勝利，只是，亮著。' },
+      { speaker: '旁白', text: '有些夢想，不需要你完美。它只需要你，建了它。' },
+    ],
+    isEnding: true
+  },
 };

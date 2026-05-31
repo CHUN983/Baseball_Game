@@ -204,8 +204,16 @@ function onGameClick() {
 }
 
 // ── 對話結束後的分支 ──────────────────────────────────────
+function resolveEndingScene() {
+  const wins = STATE.minigameResults.filter(Boolean).length;
+  if (wins === 3) return 'ending_perfect';
+  if (wins >= 1)  return 'ending_normal';
+  return 'ending_broken';
+}
+
 function afterLines() {
-  if (currentScene.isEnding)  { showEnding(); return; }
+  if (currentScene.isEndingRouter) { loadScene(resolveEndingScene()); return; }
+  if (currentScene.isEnding)       { showEnding(); return; }
   if (currentScene.minigame)  {
     triggerMinigame(currentScene.minigameLabel || '', currentScene.onGood, currentScene.onMiss, currentScene.pitchConfig || {});
     return;
@@ -430,6 +438,10 @@ function showEnding() {
   bgmPlayer.play().catch(() => {});
 
   STATE.unlockAchievement('reconciled');
+  const wins = STATE.minigameResults.filter(Boolean).length;
+  if (wins === 3) STATE.unlockAchievement('ending_perfect');
+  if (wins === 0) STATE.unlockAchievement('ending_broken');
+
   document.getElementById('game').style.display = 'none';
   const screen = document.getElementById('ending-screen');
   screen.style.display = 'flex';
@@ -437,7 +449,8 @@ function showEnding() {
   const score      = STATE.calcScore();
   const isNewBest  = STATE.updateBestScore(score);
   const bestScore  = STATE.getBestScore();
-  STATE.addHistory(score);
+  const endingKey  = STATE.currentScene; // ending_perfect / ending_normal / ending_broken
+  STATE.addHistory(score, endingKey);
   STATE.clearSave(); // 遊戲完成，清除進度存檔
   const loanPenalty = STATE.hasFlag('has_loan') ? 3000 : 0;
   const mgSymbols   = STATE.minigameResults.map(r => r ? '⚾ 安打' : '✘ 揮空').join('　');
@@ -450,6 +463,8 @@ function showEnding() {
     { key: 'go_the_distance',  label: 'Go the distance.', desc: '帶 Mann 去 Fenway，讓他也聽見聲音' },
     { key: 'perfect_hitter',   label: '完美打擊',         desc: '三場小遊戲全部打好' },
     { key: 'reconciled',       label: '與父和解',         desc: '完成了這趟旅程' },
+    { key: 'ending_perfect',   label: '燈火長明',         desc: '三場全勝，完滿收場' },
+    { key: 'ending_broken',    label: '光不因你而滅',     desc: '三場全敗，車隊依然來了' },
   ];
 
   const achHTML = ACHIEVEMENTS.map(a => {
@@ -502,6 +517,12 @@ function showEnding() {
 }
 
 // ── 歷史紀錄 Modal ────────────────────────────────────────
+const ENDING_LABEL = {
+  ending_perfect: { text: '燈火長明',     cls: 'ending-perfect' },
+  ending_normal:  { text: '走完這段距離', cls: 'ending-normal'  },
+  ending_broken:  { text: '光不因你而滅', cls: 'ending-broken'  },
+};
+
 function showHistory() {
   const history  = STATE.getHistory();
   const best     = STATE.getBestScore();
@@ -514,12 +535,14 @@ function showHistory() {
       .slice()
       .sort((a, b) => b.score - a.score)
       .map((entry, i) => {
-        const isBest = entry.score === best;
-        const d      = new Date(entry.date);
-        const dateStr = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+        const isBest   = entry.score === best;
+        const d        = new Date(entry.date);
+        const dateStr  = `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+        const el       = ENDING_LABEL[entry.ending] || { text: '─', cls: 'ending-normal' };
         return `<div class="history-row${isBest ? ' history-best' : ''}">
           <span class="history-rank">${i + 1}</span>
           <span class="history-score">${entry.score.toLocaleString()}</span>
+          <span class="history-ending ${el.cls}">${el.text}</span>
           <span class="history-date">${dateStr}</span>
         </div>`;
       }).join('');

@@ -142,11 +142,16 @@ body {
 }
 .history-row:last-child { border-bottom: none; }
 
-.history-rank { color: rgba(240,208,128,0.45); width: 28px; font-family: 'Courier New', monospace; }
-.history-score { color: #f0d080; font-family: 'Courier New', monospace; font-weight: bold; font-size: 16px; }
-.history-date  { color: rgba(255,255,255,0.35); font-size: 12px; }
-.history-best  .history-score { color: #a0e0a0; }
-.history-best  .history-rank::after { content: ' ★'; color: #a0e0a0; }
+.history-rank   { color: rgba(240,208,128,0.45); width: 24px; font-family: 'Courier New', monospace; flex-shrink: 0; }
+.history-score  { color: #f0d080; font-family: 'Courier New', monospace; font-weight: bold; font-size: 15px; width: 80px; flex-shrink: 0; }
+.history-ending { font-size: 11px; padding: 2px 7px; border-radius: 10px; border: 1px solid currentColor; flex-shrink: 0; }
+.history-date   { color: rgba(255,255,255,0.30); font-size: 11px; text-align: right; flex: 1; }
+.history-best   .history-score { color: #a0e0a0; }
+.history-best   .history-rank::after { content: ' ★'; color: #a0e0a0; }
+
+.ending-perfect { color: #f0d080; }
+.ending-normal  { color: rgba(255,255,255,0.40); }
+.ending-broken  { color: #88aaff; }
 
 .history-empty {
   text-align: center;

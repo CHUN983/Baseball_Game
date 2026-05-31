@@ -82,10 +82,10 @@ const STATE = {
     } catch (_) { return []; }
   },
 
-  addHistory(score) {
+  addHistory(score, ending) {
     try {
       const list = this.getHistory();
-      list.unshift({ score, date: new Date().toISOString() });
+      list.unshift({ score, date: new Date().toISOString(), ending: ending || 'ending_normal' });
       if (list.length > 10) list.pop();
       localStorage.setItem('fod_history', JSON.stringify(list));
     } catch (_) {}
