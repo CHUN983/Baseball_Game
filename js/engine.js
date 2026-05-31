@@ -59,7 +59,20 @@ let currentCharKey    = null;
 
 // ── 初始化 ──────────────────────────────────────────────
 function init() {
-  document.getElementById('start-btn').addEventListener('click', startGame);
+  // 有存檔時顯示「繼續遊戲」並將「開始遊戲」降級為「新遊戲」
+  if (STATE.hasSave()) {
+    document.getElementById('continue-btn').style.display = 'block';
+    document.getElementById('start-btn').textContent      = '新遊戲';
+    const savedAt = STATE.getSavedAt();
+    if (savedAt) {
+      const d = new Date(savedAt);
+      document.getElementById('save-info').textContent    = `上次遊玩：${d.getMonth() + 1}月${d.getDate()}日`;
+      document.getElementById('save-info').style.display  = 'block';
+    }
+  }
+
+  document.getElementById('continue-btn').addEventListener('click', continueGame);
+  document.getElementById('start-btn').addEventListener('click', startNewGame);
   document.getElementById('game').addEventListener('click', onGameClick);
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'Enter') {
@@ -69,10 +82,18 @@ function init() {
   });
 }
 
-function startGame() {
+function startNewGame() {
+  STATE.clearSave();
   document.getElementById('title-screen').style.display = 'none';
   document.getElementById('game').style.display = 'block';
   loadScene('prologue');
+}
+
+function continueGame() {
+  if (!STATE.load()) { startNewGame(); return; }
+  document.getElementById('title-screen').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  loadScene(STATE.currentScene);
 }
 
 // ── 場景載入 ─────────────────────────────────────────────
@@ -94,6 +115,8 @@ function loadScene(sceneKey) {
   // 套用場景級 effect / flags
   if (scene.effect) applyEffectWithAnimation(scene.effect);
   if (scene.flags)  scene.flags.forEach(applyFlag);
+
+  STATE.save(); // 自動存檔
 
   updateHUD();
   updateBackground(scene.bg);
@@ -403,7 +426,10 @@ function showEnding() {
   const screen = document.getElementById('ending-screen');
   screen.style.display = 'flex';
 
-  const score       = STATE.calcScore();
+  const score      = STATE.calcScore();
+  const isNewBest  = STATE.updateBestScore(score);
+  const bestScore  = STATE.getBestScore();
+  STATE.clearSave(); // 遊戲完成，清除進度存檔
   const loanPenalty = STATE.hasFlag('has_loan') ? 3000 : 0;
   const mgSymbols   = STATE.minigameResults.map(r => r ? '⚾ 安打' : '✘ 揮空').join('　');
 
@@ -449,7 +475,10 @@ function showEnding() {
     </div>
 
     <div class="score-display">${score.toLocaleString()}</div>
-    <div style="text-align:center;color:rgba(240,208,128,0.5);font-size:13px;margin-top:-16px;margin-bottom:32px;letter-spacing:2px">FINAL SCORE</div>
+    <div class="score-meta">
+      <span class="label-current">FINAL SCORE</span>
+      <span class="label-best">最高：${bestScore.toLocaleString()}${isNewBest ? ' <span class="new-record">NEW BEST</span>' : ''}</span>
+    </div>
 
     <div class="section-title">你回應了三個聲音</div>
     <div class="voice-item">✦ If you build it, he will come.</div>
