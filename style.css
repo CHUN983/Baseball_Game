@@ -85,6 +85,26 @@ body {
   margin-bottom: 20px;
 }
 
+#practice-btn {
+  background: transparent;
+  border: 1px solid rgba(240, 208, 128, 0.32);
+  color: rgba(240, 208, 128, 0.60);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 9px 34px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.25s, border-color 0.25s, color 0.25s;
+  display: block;
+  margin: 0 auto 18px;
+}
+#practice-btn:hover {
+  background: rgba(240, 208, 128, 0.10);
+  border-color: rgba(240, 208, 128, 0.70);
+  color: rgba(240, 208, 128, 0.90);
+}
+
 #history-btn {
   background: transparent;
   border: none;
@@ -100,6 +120,206 @@ body {
   transition: color 0.2s;
 }
 #history-btn:hover { color: rgba(240, 208, 128, 0.80); }
+
+/* ── 練習打擊 Modal ─────────────────────────────── */
+#practice-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+}
+
+#practice-content {
+  background: linear-gradient(160deg, #090920 0%, #0d1f0d 100%);
+  border: 1px solid rgba(240,208,128,0.22);
+  border-radius: 6px;
+  padding: 32px 36px 28px;
+  width: min(500px, 92vw);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.practice-title {
+  color: #f0d080;
+  font-size: 18px;
+  letter-spacing: 4px;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.practice-label {
+  color: rgba(240,208,128,0.55);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 12px;
+}
+
+.practice-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.practice-option {
+  flex: 1;
+  min-width: 110px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(240,208,128,0.20);
+  border-radius: 4px;
+  color: rgba(238,232,213,0.60);
+  font-family: inherit;
+  padding: 12px 10px;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.practice-option:hover {
+  background: rgba(240,208,128,0.08);
+  border-color: rgba(240,208,128,0.45);
+  color: rgba(238,232,213,0.85);
+}
+
+.practice-option.selected {
+  background: rgba(240,208,128,0.12);
+  border-color: rgba(240,208,128,0.80);
+  color: #f0d080;
+}
+
+.popt-name {
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.popt-sub {
+  font-size: 11px;
+  color: inherit;
+  opacity: 0.65;
+  font-family: 'Courier New', monospace;
+}
+
+.practice-option.selected .popt-sub { opacity: 0.80; }
+
+.practice-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+#practice-start-btn {
+  background: rgba(240,208,128,0.12);
+  border: 1px solid rgba(240,208,128,0.60);
+  color: #f0d080;
+  font-family: inherit;
+  font-size: 15px;
+  padding: 11px 36px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s, border-color 0.2s;
+}
+#practice-start-btn:hover {
+  background: rgba(240,208,128,0.22);
+  border-color: #f0d080;
+}
+
+#practice-cancel-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.35);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 11px 24px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+#practice-cancel-btn:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.60);
+}
+
+/* ── 練習結果畫面 ─────────────────────────────── */
+#practice-result {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 600;
+}
+
+#practice-result-content {
+  text-align: center;
+  padding: 40px 48px;
+}
+
+#practice-result-icon {
+  font-size: 52px;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+#practice-result-text {
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  margin-bottom: 36px;
+}
+
+#practice-result-text.result-win  { color: #80ee80; }
+#practice-result-text.result-lose { color: rgba(240,208,128,0.65); }
+
+.practice-result-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+}
+
+#practice-retry-btn {
+  background: rgba(240,208,128,0.12);
+  border: 1px solid rgba(240,208,128,0.55);
+  color: #f0d080;
+  font-family: inherit;
+  font-size: 15px;
+  padding: 12px 32px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+#practice-retry-btn:hover { background: rgba(240,208,128,0.22); }
+
+#practice-home-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.45);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 12px 24px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background 0.2s, color 0.2s;
+}
+#practice-home-btn:hover {
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.70);
+}
 
 /* ── 歷史紀錄 Modal ────────────────────────────── */
 #history-modal {
@@ -570,6 +790,8 @@ body {
 @media (max-width: 768px) {
   #title-content h1    { font-size: 46px; letter-spacing: 4px; }
   .title-sub           { font-size: 17px; margin-bottom: 36px; }
+  .practice-option     { min-width: 90px; padding: 10px 6px; }
+  .popt-name           { font-size: 13px; }
 
   #dialogue-box        { padding: 18px 28px 28px; }
   #dialogue-text       { font-size: 18px; }
@@ -604,7 +826,13 @@ body {
     padding: 12px 32px;
     letter-spacing: 2px;
   }
+  #practice-btn        { font-size: 13px; padding: 8px 28px; }
   .title-hint { font-size: 12px; }
+  .practice-option     { min-width: 80px; padding: 9px 5px; }
+  .popt-sub            { font-size: 10px; }
+  #practice-content    { padding: 24px 20px 22px; }
+  #practice-result-text { font-size: 26px; }
+  #practice-result-content { padding: 32px 24px; }
 
   /* HUD */
   #hud           { top: 14px; right: 14px; gap: 8px; }

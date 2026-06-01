@@ -1,3 +1,15 @@
+const PRACTICE_PITCHERS = {
+  joe:          { name: 'Shoeless Joe' },
+  archie_young: { name: 'Moonlight Graham' },
+  john:         { name: 'John Kinsella' },
+};
+
+const PRACTICE_DIFFICULTIES = {
+  easy:   { name: '簡單', speed: 0.005,  ballRate: 0.42 },
+  normal: { name: '普通', speed: 0.007,  ballRate: 0.25 },
+  hard:   { name: '困難', speed: 0.0095, ballRate: 0.10 },
+};
+
 const BGM_MAP = {
   farm:           'assets/sfx/bgm_main.mp3',
   field_construct:'assets/sfx/bgm_main.mp3',
@@ -53,7 +65,9 @@ let isTyping          = false;
 let isShowingChoices  = false;
 let isTransitioning   = false;   // 防止選擇後 click 立即穿透到 #game
 let isMinigameActive  = false;   // 小遊戲執行中，封鎖 engine 的 Space/click
-let endingTriggered   = false;   // 防止結局畫面重複觸發
+let endingTriggered      = false;   // 防止結局畫面重複觸發
+let lastPracticeCharKey  = 'joe';
+let lastPracticeDiffKey  = 'normal';
 let typewriterTimeout = null;
 let charLoadId        = 0;       // 防止 showCharacter 的 stale async callback
 let currentCharKey    = null;
@@ -78,6 +92,23 @@ function init() {
 
   document.getElementById('continue-btn').addEventListener('click', continueGame);
   document.getElementById('start-btn').addEventListener('click', startNewGame);
+  document.getElementById('practice-btn').addEventListener('click', showPracticeModal);
+  document.getElementById('practice-cancel-btn').addEventListener('click', () => {
+    document.getElementById('practice-modal').style.display = 'none';
+  });
+  document.getElementById('practice-start-btn').addEventListener('click', confirmPractice);
+  document.getElementById('practice-retry-btn').addEventListener('click', retryPractice);
+  document.getElementById('practice-home-btn').addEventListener('click', () => {
+    document.getElementById('practice-result').style.display = 'none';
+  });
+  document.querySelectorAll('.practice-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const group = btn.dataset.group;
+      document.querySelectorAll(`.practice-option[data-group="${group}"]`)
+        .forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
   document.getElementById('history-btn').addEventListener('click', showHistory);
   document.getElementById('history-close').addEventListener('click', () => {
     document.getElementById('history-modal').style.display = 'none';
@@ -554,6 +585,75 @@ function showHistory() {
   }
 
   document.getElementById('history-modal').style.display = 'flex';
+}
+
+// ── 練習打擊模式 ──────────────────────────────────
+function showPracticeModal() {
+  document.querySelectorAll('.practice-option[data-group="pitcher"]').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.key === lastPracticeCharKey);
+  });
+  document.querySelectorAll('.practice-option[data-group="difficulty"]').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.key === lastPracticeDiffKey);
+  });
+  document.getElementById('practice-modal').style.display = 'flex';
+}
+
+function confirmPractice() {
+  const charBtn = document.querySelector('.practice-option[data-group="pitcher"].selected');
+  const diffBtn = document.querySelector('.practice-option[data-group="difficulty"].selected');
+  if (!charBtn || !diffBtn) return;
+  lastPracticeCharKey = charBtn.dataset.key;
+  lastPracticeDiffKey = diffBtn.dataset.key;
+  document.getElementById('practice-modal').style.display = 'none';
+  startPracticeMode();
+}
+
+function startPracticeMode() {
+  document.getElementById('practice-result').style.display = 'none';
+
+  const pitcher = PRACTICE_PITCHERS[lastPracticeCharKey];
+  const diff    = PRACTICE_DIFFICULTIES[lastPracticeDiffKey];
+  const config  = {
+    label:    `${pitcher.name}  ‧  ${diff.name}`,
+    charKey:  lastPracticeCharKey,
+    speed:    diff.speed,
+    ballRate: diff.ballRate,
+  };
+
+  const titleScreen = document.getElementById('title-screen');
+  titleScreen.style.display = 'none';
+
+  const canvas = document.getElementById('minigame-canvas');
+  canvas.style.display    = 'block';
+  canvas.style.zIndex     = '700';
+  canvas.style.background = "url('assets/bg/field_night.png') center/cover no-repeat #000";
+
+  startMinigame(canvas, config, (win) => {
+    canvas.style.display    = 'none';
+    canvas.style.zIndex     = '';
+    canvas.style.background = '';
+    titleScreen.style.display = '';
+    showPracticeResult(win);
+  });
+}
+
+function showPracticeResult(win) {
+  const icon = document.getElementById('practice-result-icon');
+  const text = document.getElementById('practice-result-text');
+  if (win) {
+    icon.textContent  = '⚾';
+    text.textContent  = '安打！';
+    text.className    = 'result-win';
+  } else {
+    icon.textContent  = '✘';
+    text.textContent  = '繼續努力！';
+    text.className    = 'result-lose';
+  }
+  document.getElementById('practice-result').style.display = 'flex';
+}
+
+function retryPractice() {
+  startPracticeMode();
 }
 
 window.addEventListener('load', init);

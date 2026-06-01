@@ -381,14 +381,110 @@ function startMinigame(canvas, config, callback) {
         const bw     = bh * aspect;
         const batX   = bx + bw * 0.90;
         const batY   = by + bh * 0.44;
-        ctx.strokeStyle = 'rgba(175,125,65,0.88)';
-        ctx.lineWidth   = W * 0.0055;
-        ctx.lineCap     = 'round';
+        drawBatShape(batX, batY, batX + W * 0.075, batY - H * 0.24, 0.92);
+      }
+    }
+
+    function drawBatShape(x1, y1, x2, y2, alpha) {
+      const dx    = x2 - x1, dy = y2 - y1;
+      const len   = Math.sqrt(dx * dx + dy * dy);
+      const angle = Math.atan2(dy, dx);
+
+      // 在旋轉座標系裡畫棒子：沿 x 軸（0→len），y 軸為寬度
+      const hw    = len * 0.014;   // 把手半寬
+      const bw    = len * 0.055;   // 桶身半寬
+      const knobR = len * 0.032;
+      const t1    = len * 0.30;    // 肩部起點
+      const t2    = len * 0.46;    // 肩部終點
+      const tapeL = len * 0.22;    // 膠帶長度
+
+      ctx.save();
+      ctx.translate(x1, y1);
+      ctx.rotate(angle);
+
+      // ── 1. 圓柱體底色：漸層沿 y 軸（垂直截面）──
+      const cylGrad = ctx.createLinearGradient(0, -bw, 0, bw);
+      cylGrad.addColorStop(0.00, `rgba(240, 198, 110, ${alpha})`);
+      cylGrad.addColorStop(0.22, `rgba(198, 152,  80, ${alpha})`);
+      cylGrad.addColorStop(0.58, `rgba(148, 102,  46, ${alpha})`);
+      cylGrad.addColorStop(1.00, `rgba( 85,  45,  15, ${alpha})`);
+
+      ctx.beginPath();
+      ctx.moveTo(0,   -hw);
+      ctx.lineTo(t1,  -hw);
+      ctx.lineTo(t2,  -bw);
+      ctx.lineTo(len, -bw);
+      ctx.lineTo(len,  bw);
+      ctx.lineTo(t2,   bw);
+      ctx.lineTo(t1,   hw);
+      ctx.lineTo(0,    hw);
+      ctx.closePath();
+      ctx.fillStyle = cylGrad;
+      ctx.fill();
+
+      // ── 2. 握把膠帶（深色） ──
+      const tapeGrad = ctx.createLinearGradient(0, -hw, 0, hw);
+      tapeGrad.addColorStop(0,   `rgba(68, 44, 24, ${alpha})`);
+      tapeGrad.addColorStop(0.5, `rgba(38, 22, 10, ${alpha})`);
+      tapeGrad.addColorStop(1,   `rgba(25, 14,  5, ${alpha})`);
+      ctx.beginPath();
+      ctx.rect(0, -hw * 1.02, tapeL, hw * 2.04);
+      ctx.fillStyle = tapeGrad;
+      ctx.fill();
+
+      // 膠帶橫紋
+      ctx.strokeStyle = `rgba(95, 62, 35, ${alpha * 0.6})`;
+      ctx.lineWidth = 0.9;
+      ctx.setLineDash([2, 3]);
+      for (let i = 0; i <= 6; i++) {
+        const tx = (i / 6) * tapeL;
         ctx.beginPath();
-        ctx.moveTo(batX, batY);
-        ctx.lineTo(batX + W * 0.075, batY - H * 0.24);
+        ctx.moveTo(tx, -hw * 1.1);
+        ctx.lineTo(tx,  hw * 1.1);
         ctx.stroke();
       }
+      ctx.setLineDash([]);
+
+      // ── 3. 桶身中心高光 ──
+      const hlGrad = ctx.createLinearGradient(t2, 0, len, 0);
+      hlGrad.addColorStop(0,   `rgba(255,248,205,0)`);
+      hlGrad.addColorStop(0.35,`rgba(255,248,205,${alpha * 0.38})`);
+      hlGrad.addColorStop(0.75,`rgba(255,235,168,${alpha * 0.25})`);
+      hlGrad.addColorStop(1,   `rgba(255,220,140,0)`);
+      const hlw = bw * 0.30;
+      ctx.beginPath();
+      ctx.rect(t2, -hlw, len - t2, hlw * 2);
+      ctx.fillStyle = hlGrad;
+      ctx.fill();
+
+      // ── 4. 輪廓線 ──
+      ctx.strokeStyle = `rgba(60, 32, 10, ${alpha * 0.65})`;
+      ctx.lineWidth   = 1.3;
+      ctx.beginPath();
+      ctx.moveTo(0,   -hw);
+      ctx.lineTo(t1,  -hw);
+      ctx.lineTo(t2,  -bw);
+      ctx.lineTo(len, -bw);
+      ctx.lineTo(len,  bw);
+      ctx.lineTo(t2,   bw);
+      ctx.lineTo(t1,   hw);
+      ctx.lineTo(0,    hw);
+      ctx.closePath();
+      ctx.stroke();
+
+      // ── 5. 旋鈕（knob） ──
+      ctx.beginPath();
+      ctx.arc(0, 0, knobR, 0, Math.PI * 2);
+      const kg = ctx.createRadialGradient(-knobR * 0.35, -knobR * 0.35, 0, 0, 0, knobR);
+      kg.addColorStop(0, `rgba(188, 138, 65, ${alpha})`);
+      kg.addColorStop(1, `rgba( 78,  40, 13, ${alpha})`);
+      ctx.fillStyle = kg;
+      ctx.fill();
+      ctx.strokeStyle = `rgba(52, 26, 7, ${alpha * 0.7})`;
+      ctx.lineWidth   = 1;
+      ctx.stroke();
+
+      ctx.restore();
     }
 
     function getBallPos() {
@@ -473,20 +569,30 @@ function startMinigame(canvas, config, callback) {
     }
 
     function drawSwingArc() {
-      // pivot 跟著打者實際位置走，不再用固定的 H*0.63
       const bh     = BATTER_H;
       const pivot  = { x: W * 0.17, y: (H - bh - H * 0.04) + bh * 0.44 };
       const radius = isPortrait ? Math.min(W * 0.13, bh * 0.35) : W * 0.13;
       const startA = -Math.PI * 0.88;
       const sweep  = Math.PI * 0.82 * Math.min(1, swingArc);
       const fade   = Math.max(0, 0.9 - swingArc * 0.55);
+      const curA   = startA + sweep;
 
-      ctx.strokeStyle = `rgba(175,125,65,${fade})`;
-      ctx.lineWidth   = W * 0.0055;
+      // 淡化殘影弧線
+      ctx.strokeStyle = `rgba(200,155,85,${fade * 0.22})`;
+      ctx.lineWidth   = W * 0.003;
       ctx.lineCap     = 'round';
       ctx.beginPath();
-      ctx.arc(pivot.x, pivot.y, radius, startA, startA + sweep);
+      ctx.arc(pivot.x, pivot.y, radius, startA, curA);
       ctx.stroke();
+
+      // 棒子本體（沿當前角度）
+      const barrelLen = radius * 1.05;
+      const knobBack  = radius * 0.10;
+      const knobX   = pivot.x - Math.cos(curA) * knobBack;
+      const knobY   = pivot.y - Math.sin(curA) * knobBack;
+      const barrelX = pivot.x + Math.cos(curA) * barrelLen;
+      const barrelY = pivot.y + Math.sin(curA) * barrelLen;
+      drawBatShape(knobX, knobY, barrelX, barrelY, fade);
     }
 
     function drawScoreboard() {

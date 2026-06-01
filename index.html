@@ -19,6 +19,7 @@
       <button id="continue-btn" style="display:none">繼續遊戲</button>
       <button id="start-btn">開始遊戲</button>
       <div id="save-info" style="display:none"></div>
+      <button id="practice-btn">⚾ 練習打擊</button>
       <button id="history-btn" style="display:none">歷史紀錄</button>
       <div class="title-hint">改編自 1989 年電影《夢幻成真》</div>
     </div>
@@ -47,6 +48,62 @@
     </div>
   </div>
 
+  <!-- 練習打擊選擇 Modal -->
+  <div id="practice-modal" style="display:none">
+    <div id="practice-content">
+      <div class="practice-title">⚾ 練習打擊</div>
+
+      <div class="practice-label">選擇對手投手</div>
+      <div class="practice-row" id="practice-pitchers">
+        <button class="practice-option selected" data-group="pitcher" data-key="joe">
+          <span class="popt-name">Shoeless Joe</span>
+          <span class="popt-sub">穩定直球</span>
+        </button>
+        <button class="practice-option" data-group="pitcher" data-key="archie_young">
+          <span class="popt-name">Moonlight Graham</span>
+          <span class="popt-sub">多樣球路</span>
+        </button>
+        <button class="practice-option" data-group="pitcher" data-key="john">
+          <span class="popt-name">John Kinsella</span>
+          <span class="popt-sub">速球挑戰</span>
+        </button>
+      </div>
+
+      <div class="practice-label">選擇難度</div>
+      <div class="practice-row" id="practice-difficulties">
+        <button class="practice-option" data-group="difficulty" data-key="easy">
+          <span class="popt-name">簡單</span>
+          <span class="popt-sub">球速慢，壞球多</span>
+        </button>
+        <button class="practice-option selected" data-group="difficulty" data-key="normal">
+          <span class="popt-name">普通</span>
+          <span class="popt-sub">接近故事難度</span>
+        </button>
+        <button class="practice-option" data-group="difficulty" data-key="hard">
+          <span class="popt-name">困難</span>
+          <span class="popt-sub">球速快，好球多</span>
+        </button>
+      </div>
+
+      <div class="practice-actions">
+        <button id="practice-start-btn">開始練習</button>
+        <button id="practice-cancel-btn">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 練習結果畫面 -->
+  <div id="practice-result" style="display:none">
+    <div id="practice-result-content">
+      <div id="practice-result-icon"></div>
+      <div id="practice-result-text"></div>
+      <div class="practice-result-actions">
+        <button id="practice-retry-btn">再練一次</button>
+        <button id="practice-home-btn">回首頁</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 歷史紀錄 Modal -->
   <div id="history-modal" style="display:none">
     <div id="history-content">
@@ -64,9 +121,9 @@
     <div id="ending-content"></div>
   </div>
 
-  <script src="js/story.js"></script>
-  <script src="js/state.js"></script>
-  <script src="js/minigame.js"></script>
-  <script src="js/engine.js"></script>
+  <script src="js/story.js?v=2"></script>
+  <script src="js/state.js?v=2"></script>
+  <script src="js/minigame.js?v=2"></script>
+  <script src="js/engine.js?v=2"></script>
 </body>
 </html>
